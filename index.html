@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser-arcade-physics.min.js"></script>
+</head>
+<body>
+
+<script>
+var config = {
+    type: Phaser.WEBGL,
+    width: 800,
+    height: 800,
+    backgroundColor: '#000',
+    parent: 'phaser-example',
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+var graphics;
+var deathZone;
+
+var game = new Phaser.Game(config);
+
+function preload ()
+{
+    this.load.image('green_ball', 'assets/green_ball.png');
+}
+
+function create ()
+{
+
+    var emitZone = new Phaser.Geom.Rectangle(0, 0, 800, 800);
+
+    //  Any particles that enter this shape will be killed instantly
+    deathZone = new Phaser.Geom.Circle(400, 400, 28);
+
+
+    var particles = this.add.particles('green_ball');
+
+    var emitter = particles.createEmitter({
+        lifespan: 15000,
+        quantity: 2,
+        scale: { min: 1, max: 1 },
+        alpha: { start: 1, end: 1 },
+        blendMode: 'ADD',
+        maxParticles: 40,
+        emitZone: { source: emitZone },
+        deathZone: { type: 'onEnter', source: deathZone }
+    });
+
+    graphics = this.add.graphics();
+
+    this.input.on('pointermove', function (pointer) {
+
+        deathZone.x = pointer.x;
+        deathZone.y = pointer.y;
+
+    });
+}
+
+function update ()
+{
+    graphics.clear();
+
+    graphics.lineStyle(4, 0x0911d1, 1);
+
+    graphics.strokeCircleShape(deathZone);
+}
+
+</script>
+
+</body>
+</html>
